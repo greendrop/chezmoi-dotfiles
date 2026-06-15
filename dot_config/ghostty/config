@@ -1,0 +1,9 @@
+font-feature = -dlig
+font-feature = -liga
+font-feature = -calt
+font-size = 14
+shell-integration = bash
+theme = GitHub Dark Default
+tab-inherit-working-directory = true
+working-directory = home
+
