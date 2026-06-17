@@ -2,12 +2,6 @@
 
 [chezmoi](https://www.chezmoi.io/) で管理する個人用 dotfiles リポジトリです。macOS を対象としています。
 
-## 前提条件
-
-| ツール | 用途 | インストール |
-|---|---|---|
-| [chezmoi](https://www.chezmoi.io/install/) | dotfiles 管理 | `brew install chezmoi` |
-
 ## セットアップ
 
 ### 新規環境にセットアップする
