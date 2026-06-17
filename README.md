@@ -2,15 +2,6 @@
 
 [chezmoi](https://www.chezmoi.io/) で管理する個人用 dotfiles リポジトリです。macOS を対象としています。
 
-## 管理対象
-
-| リポジトリパス | 適用先 | 内容 |
-|---|---|---|
-| `dot_config/ghostty/config` | `~/.config/ghostty/config` | Ghostty ターミナル設定 |
-
-> **chezmoi の命名規則**
-> `dot_` 接頭辞が付いたファイル・ディレクトリは、`chezmoi apply` 時にホームディレクトリへ `dot_` を `.` に置き換えた名前で配置されます。
-
 ## 前提条件
 
 | ツール | 用途 | インストール |
