@@ -7,7 +7,6 @@
 | ツール | 用途 | インストール |
 |---|---|---|
 | [chezmoi](https://www.chezmoi.io/install/) | dotfiles 管理 | `brew install chezmoi` |
-| [mise](https://mise.jdx.dev/) | 開発ツールのバージョン管理（任意） | `brew install mise` |
 
 ## セットアップ
 
@@ -30,15 +29,6 @@ chezmoi diff
 
 # 問題がなければ適用
 chezmoi apply -v
-```
-
-### ツールをインストールする
-
-[mise](https://mise.jdx.dev/) を使ってリポジトリで管理するツール（gh など）をインストールする:
-
-```bash
-# リポジトリのルートで実行
-mise install
 ```
 
 ## 使い方
