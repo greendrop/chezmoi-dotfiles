@@ -112,3 +112,53 @@ chezmoi cd
 
 > このリポジトリには `.chezmoi.toml.tmpl` が含まれており、`chezmoi init` 時に
 > `~/.config/chezmoi/chezmoi.toml` へ自動生成されます。新規環境でも上記設定が有効になります。
+
+## 自動で最新を取り込む（launchd で定期 pull）
+
+chezmoi には自動 pull の仕組みはないため、macOS の launchd（LaunchAgent）で
+`chezmoi update` を定期実行することで自動化できる。
+
+以下の内容を `~/Library/LaunchAgents/io.chezmoi.update.plist` に保存する
+（chezmoi のパスは `which chezmoi` で確認して合わせる）:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>io.chezmoi.update</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/chezmoi</string>
+        <string>update</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/chezmoi-update.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/chezmoi-update.log</string>
+</dict>
+</plist>
+```
+
+> `StartInterval` は秒単位（3600 = 1時間ごと）。特定の時刻に実行したい場合は
+> `StartCalendarInterval` を使う。
+
+有効化・無効化:
+
+```bash
+# 有効化（ログイン中から即時開始）
+launchctl load -w ~/Library/LaunchAgents/io.chezmoi.update.plist
+
+# 無効化
+launchctl unload -w ~/Library/LaunchAgents/io.chezmoi.update.plist
+```
+
+> バックグラウンド実行のため、git 認証が非対話で通る必要がある
+> （SSH 鍵のパスフレーズなし、または ssh-agent に登録済みであること）。
+> 失敗時は `/tmp/chezmoi-update.log` を確認する。
