@@ -1,6 +1,6 @@
 # dotfiles
 
-[chezmoi](https://www.chezmoi.io/) で管理する個人用 dotfiles リポジトリです。macOS を対象としています。
+[chezmoi](https://www.chezmoi.io/) で管理する個人用 dotfiles リポジトリです。macOS / Linux に対応しています。
 
 ## セットアップ
 
