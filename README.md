@@ -113,10 +113,16 @@ chezmoi cd
 > このリポジトリには `.chezmoi.toml.tmpl` が含まれており、`chezmoi init` 時に
 > `~/.config/chezmoi/chezmoi.toml` へ自動生成されます。新規環境でも上記設定が有効になります。
 
-## 自動で最新を取り込む（launchd で定期 pull）
+## 自動で最新を取り込む（定期 pull）
 
-chezmoi には自動 pull の仕組みはないため、macOS の launchd（LaunchAgent）で
-`chezmoi update` を定期実行することで自動化できる。
+chezmoi には自動 pull の仕組みはないため、OS のスケジューラで `chezmoi update`
+（`git pull` + `apply`）を定期実行することで自動化できる。macOS は launchd、
+Linux は systemd ユーザータイマーを使う。
+
+> いずれもバックグラウンド実行のため、git 認証が非対話で通る必要がある
+> （SSH 鍵のパスフレーズなし、または ssh-agent に登録済みであること）。
+
+### macOS（launchd）
 
 以下の内容を `~/Library/LaunchAgents/io.chezmoi.update.plist` に保存する
 （chezmoi のパスは `which chezmoi` で確認して合わせる）:
@@ -159,6 +165,49 @@ launchctl load -w ~/Library/LaunchAgents/io.chezmoi.update.plist
 launchctl unload -w ~/Library/LaunchAgents/io.chezmoi.update.plist
 ```
 
-> バックグラウンド実行のため、git 認証が非対話で通る必要がある
-> （SSH 鍵のパスフレーズなし、または ssh-agent に登録済みであること）。
-> 失敗時は `/tmp/chezmoi-update.log` を確認する。
+失敗時は `/tmp/chezmoi-update.log` を確認する。
+
+### Linux（systemd ユーザータイマー）
+
+`~/.config/systemd/user/chezmoi-update.service` を作成する
+（chezmoi のパスは `which chezmoi` で確認して合わせる）:
+
+```ini
+[Unit]
+Description=Update dotfiles with chezmoi
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/chezmoi update
+```
+
+`~/.config/systemd/user/chezmoi-update.timer` を作成する:
+
+```ini
+[Unit]
+Description=Run chezmoi update periodically
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+> `OnUnitActiveSec` が実行間隔（1h = 1時間ごと）。`Persistent=true` により、
+> 電源オフ/スリープ中に逃した実行を起動後に補完する。
+
+有効化・無効化:
+
+```bash
+# 有効化（即時開始）
+systemctl --user daemon-reload
+systemctl --user enable --now chezmoi-update.timer
+
+# 無効化
+systemctl --user disable --now chezmoi-update.timer
+```
+
+実行ログは `journalctl --user -u chezmoi-update.service` で確認する。
