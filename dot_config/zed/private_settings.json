@@ -9,6 +9,11 @@
 {
   "terminal": {
     "font_family": ".ZedMono",
+    "font_features": {
+      "calt": false,
+      "liga": false,
+      "dlig": false,
+    },
   },
   "vim": {
     "use_system_clipboard": "never",
